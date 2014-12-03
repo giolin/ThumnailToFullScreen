@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Activity Animations</string>
+    <string name="subactivity_name">PictureInfo!</string>
+    <string name="menu_slow_animations">Slow</string>
+    <string name="title_activity_clipping_image">ClippingImageActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+</resources>
