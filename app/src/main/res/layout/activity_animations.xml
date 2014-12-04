@@ -12,11 +12,11 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <GridView
+    <com.example.george.sharedelementimplementation.MyGridView
         android:id="@+id/gv_photo_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,4 +28,22 @@
         android:drawSelectorOnTop="true"
         android:numColumns="3" />
 
-</RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/rl_fullscreen_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.example.george.sharedelementimplementation.ClippingImageView
+            android:id="@+id/iv_full_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+
+        <com.example.george.sharedelementimplementation.HackyViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
+
+</FrameLayout>

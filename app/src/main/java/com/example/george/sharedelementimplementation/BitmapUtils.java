@@ -24,24 +24,30 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BitmapUtils {
-    
+
     int[] mPhotos = {
-            R.drawable.p1,
-            R.drawable.p2,
-            R.drawable.p3,
-            R.drawable.p4
+        R.drawable.p1,
+        R.drawable.p2,
+        R.drawable.p3,
+        R.drawable.p4,
+        R.drawable.pug0,
+        R.drawable.pug1,
+        R.drawable.pug2,
+        R.drawable.pug3,
+        R.drawable.pug4
     };
-    
+
     String[] mDescriptions = {
-            "This picture was taken while sunbathing in a natural hot spring, which was " +
-            "unfortunately filled with acid, which is a lasting memory from that trip, whenever I " +
+        "This picture was taken while sunbathing in a natural hot spring, which was " +
+            "unfortunately filled with acid, which is a lasting memory from that trip, " +
+            "whenever I " +
             "I look at my own skin.",
-            "I took this shot with a pinhole camera mounted on a tripod constructed out of " +
+        "I took this shot with a pinhole camera mounted on a tripod constructed out of " +
             "soda straws. I felt that that combination best captured the beauty of the landscape " +
             "in juxtaposition with the detritus of mankind.",
-            "I don't remember where or when I took this picture. All I know is that I was really " +
+        "I don't remember where or when I took this picture. All I know is that I was really " +
             "drunk at the time, and I woke up without my left sock.",
-            "Right before I took this picture, there was a busload of school children right " +
+        "Right before I took this picture, there was a busload of school children right " +
             "in my way. I knew the perfect shot was coming, so I quickly yelled 'Free candy!!!' " +
             "and they scattered.",
     };
@@ -74,10 +80,10 @@ public class BitmapUtils {
         if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource(resources, resourceId);
             sBitmapResourceMap.put(resourceId, bitmap);
-        }        
+        }
         return bitmap;
     }
-    
+
     /**
      * Create and return a thumbnail image given the original source bitmap and a max
      * dimension (width or height).
@@ -96,9 +102,9 @@ public class BitmapUtils {
             scaledHeight = 200;
         }
         Bitmap thumbnail = Bitmap.createScaledBitmap(original, scaledWidth, scaledHeight, true);
-        
+
         return thumbnail;
     }
-    
+
 
 }
