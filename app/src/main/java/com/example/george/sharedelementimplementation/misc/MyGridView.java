@@ -1,4 +1,4 @@
-package com.example.george.sharedelementimplementation;
+package com.example.george.sharedelementimplementation.misc;
 
 import android.content.Context;
 import android.util.AttributeSet;

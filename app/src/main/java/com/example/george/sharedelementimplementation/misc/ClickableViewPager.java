@@ -1,4 +1,4 @@
-package com.example.george.sharedelementimplementation;
+package com.example.george.sharedelementimplementation.misc;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
@@ -26,16 +26,16 @@ import android.view.MotionEvent;
  *
  * @author Chris Banes
  */
-public class HackyViewPager extends ViewPager {
+public class ClickableViewPager extends ViewPager {
 
     private boolean isLocked;
 
-    public HackyViewPager(Context context) {
+    public ClickableViewPager(Context context) {
         super(context);
         this.isLocked = false;
     }
 
-    public HackyViewPager(Context context, AttributeSet attrs) {
+    public ClickableViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.isLocked = false;
     }

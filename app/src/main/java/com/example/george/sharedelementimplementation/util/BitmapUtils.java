@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.example.george.sharedelementimplementation;
+package com.example.george.sharedelementimplementation.util;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import com.example.george.sharedelementimplementation.misc.PictureData;
+import com.example.george.sharedelementimplementation.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,22 +40,7 @@ public class BitmapUtils {
         R.drawable.pug4
     };
 
-    String[] mDescriptions = {
-        "This picture was taken while sunbathing in a natural hot spring, which was " +
-            "unfortunately filled with acid, which is a lasting memory from that trip, " +
-            "whenever I " +
-            "I look at my own skin.",
-        "I took this shot with a pinhole camera mounted on a tripod constructed out of " +
-            "soda straws. I felt that that combination best captured the beauty of the landscape " +
-            "in juxtaposition with the detritus of mankind.",
-        "I don't remember where or when I took this picture. All I know is that I was really " +
-            "drunk at the time, and I woke up without my left sock.",
-        "Right before I took this picture, there was a busload of school children right " +
-            "in my way. I knew the perfect shot was coming, so I quickly yelled 'Free candy!!!' " +
-            "and they scattered.",
-    };
-
-    static HashMap<Integer, Bitmap> sBitmapResourceMap = new HashMap<Integer, Bitmap>();
+    static HashMap<Integer, Bitmap> sBitmapResourceMap = new HashMap<>();
 
     /**
      * Load pictures and descriptions. A real app wouldn't do it this way, but that's
@@ -65,8 +53,7 @@ public class BitmapUtils {
             int resourceId = mPhotos[(int) (Math.random() * mPhotos.length)];
             Bitmap bitmap = getBitmap(resources, resourceId);
             Bitmap thumbnail = getThumbnail(bitmap, 200);
-            String description = mDescriptions[(int) (Math.random() * mDescriptions.length)];
-            pictures.add(new PictureData(resourceId, description, thumbnail));
+            pictures.add(new PictureData(resourceId, thumbnail));
         }
         return pictures;
     }
@@ -75,7 +62,7 @@ public class BitmapUtils {
      * Utility method to get bitmap from cache or, if not there, load it
      * from its resource.
      */
-    static Bitmap getBitmap(Resources resources, int resourceId) {
+    public static Bitmap getBitmap(Resources resources, int resourceId) {
         Bitmap bitmap = sBitmapResourceMap.get(resourceId);
         if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource(resources, resourceId);

@@ -1,4 +1,4 @@
-package com.example.george.sharedelementimplementation;
+package com.example.george.sharedelementimplementation.misc;
 
 import android.content.Context;
 import android.view.View;
@@ -8,6 +8,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SectionIndexer;
 
+import com.example.george.sharedelementimplementation.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class PhotoGridAdapter extends BaseAdapter implements SectionIndexer {
                 (int) mContext.getResources().getDimension(R.dimen.photo_grid_size)));
         }
         Picasso.with(mContext)
-            .load(mRes.get(position).resourceId)
+            .load(mRes.get(position).getResourceId())
             .placeholder(android.R.color.darker_gray)
             .error(android.R.color.holo_red_light)
             .into((ImageView) convertView);

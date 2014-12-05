@@ -1,4 +1,4 @@
-package com.example.george.sharedelementimplementation;
+package com.example.george.sharedelementimplementation.misc;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -8,10 +8,18 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+
+import com.example.george.sharedelementimplementation.util.Screens;
 
 public class ClippingImageView extends ImageView {
 
+    private static final String TAG = ClippingImageView.class.getSimpleName();
+
     private final Rect mClipRect = new Rect();
+
+    private int leftPosition;
+    private int topPosition;
 
     public ClippingImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -39,27 +47,44 @@ public class ClippingImageView extends ImageView {
 //    }
 
     @Override public void setImageDrawable(Drawable drawable) {
-        final int origW = drawable.getIntrinsicWidth();
-        final int origH = drawable.getIntrinsicHeight();
-        int width;
-        int height;
-        if (origW > origH) {
-            width = Screens.getScreenWidth((WindowManager) getContext()
+        if (drawable != null) {
+            final int origW = drawable.getIntrinsicWidth();
+            final int origH = drawable.getIntrinsicHeight();
+            int screenWidth = Screens.getScreenWidth((WindowManager) getContext()
                 .getSystemService(Context
                     .WINDOW_SERVICE));
-            float ratio = (float) width / origW;
-            height = (int) (origH * ratio);
-        } else {
-            height  = Screens.getScreenHeight((WindowManager) getContext()
+            int screenHeight = Screens.getScreenHeight((WindowManager) getContext()
                 .getSystemService(Context
                     .WINDOW_SERVICE));
-            float ratio = (float) height / origH;
-            width = (int) (origH * ratio);
+            int windowHeight = ((RelativeLayout) getParent()).getHeight();
+            int width;
+            int height;
+            if (origW > origH) {
+                width = screenWidth;
+                float ratio = (float) width / origW;
+                height = (int) (origH * ratio);
+                leftPosition = 0;
+//                topPosition = (screenHeight - height) / 2;
+                topPosition = (windowHeight - height) / 2;
+            } else {
+                height = screenHeight;
+                float ratio = (float) height / origH;
+                width = (int) (origH * ratio);
+                leftPosition = (screenWidth - width) / 2;
+                topPosition = 0;
+            }
+            getLayoutParams().width = width;
+            getLayoutParams().height = height;
         }
-        getLayoutParams().width = width;
-        getLayoutParams().height = height;
-
         super.setImageDrawable(drawable);
+    }
+
+    public int getLeftPosition() {
+        return leftPosition;
+    }
+
+    public int getTopPosition() {
+        return topPosition;
     }
 
     @Override protected void onDraw(Canvas canvas) {

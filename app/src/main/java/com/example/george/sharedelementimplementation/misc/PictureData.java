@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-package com.example.george.sharedelementimplementation;
+package com.example.george.sharedelementimplementation.misc;
 
 import android.graphics.Bitmap;
 
 public class PictureData {
     int resourceId;
-    String description;
     Bitmap thumbnail;
     
-    public PictureData(int resourceId, String description, Bitmap thumbnail) {
+    public PictureData(int resourceId, Bitmap thumbnail) {
         this.resourceId = resourceId;
-        this.description = description;
         this.thumbnail = thumbnail;
     }
+
+    public int getResourceId() {
+        return resourceId;
+    }
+
+
+    public Bitmap getThumbnail() {
+        return thumbnail;
+    }
+
 }
