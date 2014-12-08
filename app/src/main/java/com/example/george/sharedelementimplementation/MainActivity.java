@@ -56,16 +56,6 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-/**
- * This example shows how to create a custom activity animation when you want something more
- * than window animations can provide. The idea is to disable window animations for the
- * activities and to instead launch or return from the sub-activity immediately, but use
- * property animations inside the activities to customize the transition.
- * <p/>
- * Watch the associated video for this demo on the DevBytes channel of developer.android.com
- * or on the DevBytes playlist in the androiddevelopers channel on YouTube at
- * https://www.youtube.com/playlist?list=PLWz5rJ2EKKc_XOgcRukSoKKjewFJZrKV0.
- */
 public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -73,7 +63,7 @@ public class MainActivity extends ActionBarActivity {
     private static final TimeInterpolator sDecelerator = new DecelerateInterpolator();
     private static final TimeInterpolator sAccelerator = new AccelerateInterpolator();
 
-    private static final int ANIM_DURATION = 3000;
+    private static final int ANIM_DURATION = 1500;
     private static float sAnimatorScale = 1;
 
     RelativeLayout mTopLevelLayout;
@@ -86,8 +76,8 @@ public class MainActivity extends ActionBarActivity {
     private ColorDrawable mBackground;
     private ViewPager mPager;
 
-    private int mLeftDelta;
-    private int mTopDelta;
+    private int mXDelta;
+    private int mYDelta;
     private float mImageScale;
     private float clipRatio;
 
@@ -98,8 +88,6 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_animations);
-
-        getSupportActionBar().hide();
 
         mGridView = (MyGridView) findViewById(R.id.gv_photo_grid);
         PhotoGridAdapter mAdapter = new PhotoGridAdapter(this);
@@ -136,51 +124,16 @@ public class MainActivity extends ActionBarActivity {
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                getSupportActionBar().hide();
 
                 mIsInFullscreen = true;
-
                 // set the animating image to the clicked item
                 Drawable drawable = ((ImageView) view).getDrawable();
-                float drawableWidth = drawable.getIntrinsicWidth();
-                float drawableHeight = drawable.getIntrinsicHeight();
+                mImage.setImageDrawable(drawable);
+                mImage.setVisibility(View.VISIBLE);
 
-                int[] viewLocation = new int[2];
-                int[] gridViewLocation = new int[2];
-                view.getLocationOnScreen(viewLocation);
-                mGridView.getLocationOnScreen(gridViewLocation);
-                final int thumbnailX = viewLocation[0] + view.getWidth()/2;
-                final int thumbnailY = viewLocation[1] + view.getHeight()/2;
-                final int fullscreenX = gridViewLocation[0] + mGridView.getWidth()/2;
-                final int fullscreenY = gridViewLocation[1] + mGridView.getHeight()/2;
-                Log.d(TAG, "thumbnailX=" + viewLocation[0] + ", thumbnailY=" + viewLocation[1] + "\nfullscreenX=" + fullscreenX + ", fullscreenY=" + fullscreenY);
-
-                // calculate the clicked view's location and width/height
-                final float heightWidthRatio = drawableHeight / drawableWidth;
-                Log.d(TAG, "drawableHeight=" + drawableHeight + "\ndrawableWidth=" +
-                    drawableWidth + "\nheightWidthRatio=" + heightWidthRatio);
-
-                if (heightWidthRatio < 1) {
-                    // if the original picture is in landscape
-                    clipRatio = 1 - heightWidthRatio;
-                    viewLocation[0] = (int) (viewLocation[0] + view.getWidth() / 2
-                        - view.getHeight() / (2 * heightWidthRatio));
-                } else {
-                    // if the original picture is in portrait
-                    clipRatio = 1 - 1 / heightWidthRatio;
-                    viewLocation[1] = (int) (viewLocation[1] + view.getHeight() / 2
-                        - view.getWidth() * heightWidthRatio / 2);
-                }
-
-                final int thumbnailLeft = viewLocation[0];
-                final int thumbnailTop = viewLocation[1];
-                final int thumbnailWidth = view.getWidth();
-                final int thumbnailHeight = view.getHeight();
-
-                Log.d(TAG, "(thumbnailLeft, thumbnailTop)=(" + thumbnailLeft + ", " +
-                    "" + thumbnailTop + ")\n"
-                    + "(thumbnailWidth, thumbnailHeight)=(" + thumbnailWidth + ", " +
-                    "" + thumbnailHeight + ")");
+                // reset image translation
+                mImage.setTranslationX(0);
+                mImage.setTranslationY(0);
 
                 // reset pager's adapter every time a view in Grid view is clicked
                 mPager.setAdapter(new PhotoViewAdapter(MainActivity.this, pictures));
@@ -201,37 +154,36 @@ public class MainActivity extends ActionBarActivity {
                 });
                 mPager.setCurrentItem(position, false);
 
-                mImage.setImageDrawable(drawable);
-                mImage.setVisibility(View.VISIBLE);
+                final float drawableWidth = drawable.getIntrinsicWidth();
+                final float drawableHeight = drawable.getIntrinsicHeight();
+                // calculate the clicked view's location and width/height
+                final float heightWidthRatio = drawableHeight / drawableWidth;
+                final int thumbnailWidth = view.getWidth();
+                final int thumbnailHeight = view.getHeight();
 
-                // since setting drawable is in another thread, there is no guarantee of when the
-                // drawable is set
-                // here we put a listener onPreDraw to get the right info after the drawable is set
-                mImage.setPivotX(0);
-                mImage.setPivotY(0);
-                // reset image translation
-                mImage.setTranslationX(0);
-                mImage.setTranslationY(0);
+                int[] viewLocation = new int[2];
+                int[] gridViewLocation = new int[2];
+                view.getLocationOnScreen(viewLocation);
+                mGridView.getLocationOnScreen(gridViewLocation);
+                final int thumbnailX = viewLocation[0] + thumbnailWidth / 2;
+                final int thumbnailY = viewLocation[1] + thumbnailHeight / 2;
+                final int fullscreenX = gridViewLocation[0] + mGridView.getWidth() / 2;
+                final int fullscreenY = gridViewLocation[1] + mGridView.getHeight() / 2;
+
+                Log.d(TAG, "viewLocation=" + viewLocation[0] + ", " + viewLocation[1]
+                    + "\ngridViewLocation=" + gridViewLocation[0] + ", " + gridViewLocation[1]);
+                Log.d(TAG, "thumbnailX=" + thumbnailX + ", thumbnailY=" + thumbnailY
+                    + "\nfullscreenX=" + fullscreenX + ", fullscreenY=" + fullscreenY);
+
+                // for image transform, we need 3 arguments to transform properly:
+                // deltaX and deltaY - the translation of the image
+                // scale value - the resize value
+                // clip ratio - the reveal part of the image
 
                 // figure out where the thumbnail and full size versions are, relative
                 // to the screen and each other
-                int[] imageFullscreenLocation = new int[2];
-                mImage.getLocationOnScreen(imageFullscreenLocation);
-//                mLeftDelta = thumbnailLeft - imageFullscreenLocation[0];
-//                mTopDelta = thumbnailTop - imageFullscreenLocation[1];
-//                mLeftDelta = thumbnailLeft - mImage.getLeftPosition();
-//                mTopDelta = thumbnailTop - mImage.getTopPosition();
-                mLeftDelta = thumbnailLeft - mImage.getLeftPosition();
-                mTopDelta = thumbnailTop - mImage.getTopPosition();
-                Log.d(TAG, "*************************Enter Animation*************************");
-                Log.d(TAG, "mImage.getX()=" + mImage.getX() + "mImage.getY()=" + mImage.getX());
-                Log.d(TAG, "(fullScreenImageLeft, " + "fullScreenImageTop)=(" +
-                    imageFullscreenLocation[0] + ", " + imageFullscreenLocation[1] + ")");
-                Log.d(TAG, "(fullScreenImageLeftR, " + "fullScreenImageTopR)=(" +
-                    mImage.getLeftPosition() + ", " + mImage.getTopPosition() + ")");
-                Log.d(TAG, "(mLeftDelta, mTopDelta)=(" + mLeftDelta + ", " + mTopDelta
-                    + ")\nmImageScale=" + mImageScale
-                    + "\nclipRatio=" + clipRatio);
+                mXDelta = thumbnailX - fullscreenX;
+                mYDelta = thumbnailY - fullscreenY;
 
                 // Scale factors to make the large version the same size as the thumbnail
                 if (heightWidthRatio < 1) {
@@ -239,6 +191,20 @@ public class MainActivity extends ActionBarActivity {
                 } else {
                     mImageScale = (float) thumbnailWidth / mImage.getLayoutParams().width;
                 }
+
+                // clip ratio
+                if (heightWidthRatio < 1) {
+                    // if the original picture is in landscape
+                    clipRatio = 1 - heightWidthRatio;
+                } else {
+                    // if the original picture is in portrait
+                    clipRatio = 1 - 1 / heightWidthRatio;
+                }
+
+                Log.d(TAG, "*************************Enter Animation*************************");
+                Log.d(TAG, "(mXDelta, mTopDelta)=(" + mXDelta + ", " + mYDelta
+                    + ")\nmImageScale=" + mImageScale + "\nclipRatio=" + clipRatio);
+
                 runEnterAnimation();
             }
         });
@@ -272,8 +238,8 @@ public class MainActivity extends ActionBarActivity {
 
         AnimatorSet set = new AnimatorSet();
         set.playTogether(
-            ObjectAnimator.ofFloat(mImage, "translationX", mLeftDelta, 0),
-            ObjectAnimator.ofFloat(mImage, "translationY", mTopDelta, 0),
+            ObjectAnimator.ofFloat(mImage, "translationX", mXDelta, 0),
+            ObjectAnimator.ofFloat(mImage, "translationY", mYDelta, 0),
             ObjectAnimator.ofFloat(mImage, "scaleX", mImageScale, 1),
             ObjectAnimator.ofFloat(mImage, "scaleY", mImageScale, 1),
 //            ObjectAnimator.ofFloat(mImage, "alpha", 0, 1),
@@ -310,8 +276,8 @@ public class MainActivity extends ActionBarActivity {
 
         AnimatorSet set = new AnimatorSet();
         set.playTogether(
-            ObjectAnimator.ofFloat(mImage, "translationX", 0, mLeftDelta),
-            ObjectAnimator.ofFloat(mImage, "translationY", 0, mTopDelta),
+            ObjectAnimator.ofFloat(mImage, "translationX", 0, mXDelta),
+            ObjectAnimator.ofFloat(mImage, "translationY", 0, mYDelta),
             ObjectAnimator.ofFloat(mImage, "scaleX", 1, mImageScale),
             ObjectAnimator.ofFloat(mImage, "scaleY", 1, mImageScale),
 //            ObjectAnimator.ofFloat(mImage, "alpha", 1, 0),
@@ -320,7 +286,6 @@ public class MainActivity extends ActionBarActivity {
         );
         set.setInterpolator(sAccelerator);
         set.setDuration(duration).start();
-        mImage.setVisibility(View.VISIBLE);
         mPager.setVisibility(View.GONE);
         mIsAnimationPlaying = true;
     }
@@ -329,68 +294,41 @@ public class MainActivity extends ActionBarActivity {
         if (mIsInFullscreen) {
             if (!mIsAnimationPlaying) {
 
-//                getSupportActionBar().show();
-
                 View view = mGridView.getViewByPosition(mPager.getCurrentItem());
 
                 Drawable drawable = ((ImageView) view).getDrawable();
-                float drawableWidth = drawable.getIntrinsicWidth();
-                float drawableHeight = drawable.getIntrinsicHeight();
 
-                int[] viewLocation = new int[2];
-                view.getLocationOnScreen(viewLocation);
+                mImage.setImageDrawable(drawable);
+                mImage.setVisibility(View.VISIBLE);
 
+                final float drawableWidth = drawable.getIntrinsicWidth();
+                final float drawableHeight = drawable.getIntrinsicHeight();
                 final float heightWidthRatio = drawableHeight / drawableWidth;
-                Log.d(TAG, "drawableHeight=" + drawableHeight + "\ndrawableWidth=" +
-                    drawableWidth + "\nheightWidthRatio=" + heightWidthRatio);
-
-                if (heightWidthRatio < 1) {
-                    // is the original picture is in landscape
-                    clipRatio = 1 - heightWidthRatio;
-                    viewLocation[0] = (int) (viewLocation[0] + view.getWidth() / 2
-                        - view.getHeight() / (2 * heightWidthRatio));
-                } else {
-                    // if the original picture in portrait
-                    clipRatio = 1 - 1 / heightWidthRatio;
-                    viewLocation[1] = (int) (viewLocation[1] + view.getHeight() / 2
-                        - view.getWidth() * heightWidthRatio / 2);
-                }
-
-                final int thumbnailLeft = viewLocation[0];
-                final int thumbnailTop = viewLocation[1];
                 final int thumbnailWidth = view.getWidth();
                 final int thumbnailHeight = view.getHeight();
 
-                Log.d(TAG, "(thumbnailLeft, thumbnailTop)=(" + thumbnailLeft + ", " +
-                    "" + thumbnailTop + ")\n"
-                    + "(thumbnailWidth, thumbnailHeight)=(" + thumbnailWidth + ", " +
+                int[] viewLocation = new int[2];
+                int[] gridViewLocation = new int[2];
+                view.getLocationOnScreen(viewLocation);
+                mGridView.getLocationOnScreen(gridViewLocation);
+                final int thumbnailX = viewLocation[0] + view.getWidth() / 2;
+                final int thumbnailY = viewLocation[1] + view.getHeight() / 2;
+                final int fullscreenX = gridViewLocation[0] + mGridView.getWidth() / 2;
+                final int fullscreenY = gridViewLocation[1] + mGridView.getHeight() / 2;
+                Log.d(TAG, "viewLocation=" + viewLocation[0] + ", " +
+                    "" + viewLocation[1] + "\ngridViewLocation=" + gridViewLocation[0] + ", " +
+                    "" + gridViewLocation[1]);
+                Log.d(TAG, "thumbnailX=" + thumbnailX + ", thumbnailY=" + thumbnailY +
+                    "\nfullscreenX=" + fullscreenX + ", fullscreenY=" + fullscreenY);
+                Log.d(TAG, "(thumbnailWidth, thumbnailHeight)=(" + thumbnailWidth + ", " +
                     "" + thumbnailHeight + ")");
+                Log.d(TAG, "drawableHeight=" + drawableHeight + "\ndrawableWidth=" +
+                    drawableWidth + "\nheightWidthRatio=" + heightWidthRatio);
 
-                mImage.setImageDrawable(drawable);
-
-                // reset image pivot to scale normally
-                mImage.setPivotX(0);
-                mImage.setPivotY(0);
-                // reset image translation
-                mImage.setTranslationX(0);
-                mImage.setTranslationY(0);
-                // Figure out where the thumbnail and full
-                // size versions are, relative
+                // Figure out where the thumbnail and full size versions are, relative
                 // to the screen and each other
-                int[] imageFullscreenLocation = new int[2];
-                mImage.getLocationOnScreen(imageFullscreenLocation);
-//                mLeftDelta = thumbnailLeft - imageFullscreenLocation[0];
-//                mTopDelta = thumbnailTop - imageFullscreenLocation[1];
-                mLeftDelta = thumbnailLeft - mImage.getLeftPosition();
-                mTopDelta = thumbnailTop - mImage.getTopPosition();
-                Log.d(TAG, "*************************Exit Animation*************************");
-                Log.d(TAG, "(fullScreenImageLeft, " + "fullScreenImageTop)=(" +
-                    imageFullscreenLocation[0] + ", " + imageFullscreenLocation[1] + ")");
-                Log.d(TAG, "(fullScreenImageLeftR, " + "fullScreenImageTopR)=(" +
-                    mImage.getLeftPosition() + ", " + (mImage.getTopPosition()) + ")");
-                Log.d(TAG, "(mLeftDelta, mTopDelta)=(" + mLeftDelta + ", " + mTopDelta
-                    + ")\nmImageScale=" + mImageScale
-                    + "\nclipRatio=" + clipRatio);
+                mXDelta = thumbnailX - fullscreenX;
+                mYDelta = thumbnailY - fullscreenY;
 
                 // Scale factors to make the large version
                 // the same size as the thumbnail
@@ -399,6 +337,24 @@ public class MainActivity extends ActionBarActivity {
                 } else {
                     mImageScale = (float) thumbnailWidth / mImage.getLayoutParams().width;
                 }
+
+                if (heightWidthRatio < 1) {
+                    // is the original picture is in landscape
+                    clipRatio = 1 - heightWidthRatio;
+                } else {
+                    // if the original picture in portrait
+                    clipRatio = 1 - 1 / heightWidthRatio;
+                }
+
+                Log.d(TAG, "*************************Exit Animation*************************");
+                Log.d(TAG, "(mXDelta, mTopDelta)=(" + mXDelta + ", " + mYDelta
+                    + ")\nmImageScale=" + mImageScale
+                    + "\nclipRatio=" + clipRatio);
+
+                // reset image translation
+                mImage.setTranslationX(0);
+                mImage.setTranslationY(0);
+
                 runExitAnimation();
             }
         } else {

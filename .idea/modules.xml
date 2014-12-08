@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SharedElementImplementation.iml" filepath="$PROJECT_DIR$/SharedElementImplementation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ThumnailToFullScreen.iml" filepath="$PROJECT_DIR$/ThumnailToFullScreen.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
